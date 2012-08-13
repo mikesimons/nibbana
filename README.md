@@ -42,7 +42,7 @@ Nibbana has the following known issues:
  * No way to get list of tags given list of tasks
  * No counts for tasks / tags / projects
  * No indexing so multiple executions of views have to scan storage again even if not changed
- * * Need to add a hashing method for filter methods and index by task + hash: result
+  * Need to add a hashing method for filter methods and index by task + hash: result
  * No views for tags
  * No waiting or scheduled views
  * Potential race conditions between update and sync that could result in data loss
@@ -70,13 +70,13 @@ Nibbana has the following known issues:
  * Fix browserify build
 
 # Why?
-Although the NirvanaHQ team has a project in the works, they've taken an age about getting just the iphone version of NirvanaHQ out.
-The mobile website is quite frankly awful to use even on a latest generation android device.
+Although the NirvanaHQ team has a project in the works, it has taken a while just to get the iphone version of NirvanaHQ out.
+The mobile website is pretty awful to use even on a latest generation android device.
 
 As such I decided I'd write my own NirvanaHQ android app sing PhoneGap and this is the first step towards that.
 
 # Will using the API allow me to get around the plan limits?
-Hell no.
+Nope.
 
 # Pitfalls
 I'm not a member of the NirvanaHQ team nor am I in any way affiliated with them.
