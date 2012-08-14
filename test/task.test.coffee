@@ -1,6 +1,7 @@
 chai = require 'chai'
 Task = require '../src/task/task'
 Project = require '../src/task/project'
+Tag = require '../src/tag/tag'
 moment = require 'moment'
 
 chai.should()
@@ -48,8 +49,13 @@ describe 'Task', ->
       t = new Task energy: 3
       t.energy().should.equal 3
 
-    it 'should return start date'
-    it 'should return due date'
+    it 'should return scheduled for date', ->
+      t = new Task startdate: '20120814'
+      t.scheduled_for().should.equal '20120814'
+
+    it 'should return due date', ->
+      t = new Task duedate: '20120814'
+      t.due_date().should.equal '20120814'
 
   describe 'get entity accessor', ->
     it 'should return parent', ->
@@ -64,7 +70,7 @@ describe 'Task', ->
     it 'should return "waiting for" contact'
     it 'should return instances of tags as array'
 
-  describe 'get flag accessor', ->
+  describe 'flag accessor', ->
     it 'should return focused state', ->
       t = new Task {}
       t.focus( true )
@@ -95,8 +101,14 @@ describe 'Task', ->
       t.log( true )
       t.is_logged().should.equal true
 
-    it 'should return recurring status'
-    it 'should return waiting status'
+    it 'should return recurring status', ->
+      t = new Task recurring: 1
+      t.is_recurring().should.equal true
+
+    it 'should return waiting status', ->
+      t = new Task {}
+      t.waiting_for( 'Someone' )
+      t.is_waiting().should.equal true
 
   describe 'set accessor', ->
     it 'should set name', ->
@@ -150,28 +162,48 @@ describe 'Task', ->
     it 'should set recurring status'
 
   describe 'set entity accessor', ->
-    it 'should set parentid from project'
-    it 'should set "waiting for" value from contact'
-    it 'should set tags from array of tag entities'
+    it 'should set parentid from project', ->
+      p = id: 'PARENTID'
+      t = new Task {}
+      t.set_parent( p )
+      t.parentid().should.equal 'PARENTID'
+
+    it 'should set "waiting for" value from contact', ->
+      tag = key: 'TAG'
+      t = new Task {}
+      t.waiting_for( tag )
+      t.waiting_for().should.equal 'TAG'
+
+    it 'should set tags from array of tag entities', ->
+      tags = [ new Tag( key: '1' ), new Tag( key: '2' ) ]
+      t = new Task {}
+      t.tags( tags )
+      t.tags().join( ',' ).should.equal '1,2'
+
     it 'should set start date from Date object'
     it 'should set due date from Date object'
 
-  describe 'set flag accessor', ->
-    it 'should set focused state'
-    it 'should set completed status'
-    it 'should set cancelled status'
-    it 'should set trashed status'
-    it 'should set deleted status'
-    it 'should set logged status'
-    it 'should set recurring status'
-
   describe 'special accessors', ->
-    it 'should return expected store key'
+    it 'should return expected store key', ->
+      t = new Task id: 'ABC'
+      t.store_key().should.equal 'task-ABC'
+
     it 'should return all data as object'
-    it 'should set __internal_type on exported data'
+
+    it 'should set __internal_type on exported data', ->
+      t = new Task {}
+      t.get_data().__internal_type.should.equal 'Task'
 
   describe 'api compaitbility', ->
-    it 'should set modified time for property'
+    it 'should set modified time for property', ->
+      start = Math.floor( new Date().getTime() / 1000 )
+      t = new Task {}
+      t.name( 'test' )
+      data = t.get_data()
+      data._name.should.not.be.undefined
+      data._name.should.be.a 'number'
+      ( data._name >= start ).should.be.true
+
     it 'should export all fields required'
     it 'should export due date as YYYYMMDD'
     it 'should export start date as YYYYMMDD'

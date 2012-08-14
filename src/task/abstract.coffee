@@ -38,7 +38,7 @@ class AbstractTask
       energy: 0
       startdate: ""
       duedate: ""
-      recurring: ""
+      recurring: null
 
     if typeof data.tags == "string"
       data.tags = data.tags.split( "," ).filter ( t ) -> t != ""
@@ -76,9 +76,14 @@ class AbstractTask
     @
 
   waiting_for: ( waiting_for ) ->
+    # TODO create contact if non-existant
+    waiting_for = waiting_for.key if typeof waiting_for == "object" && waiting_for.key
     return @data.waitingfor if waiting_for == undefined
     @_set( "waitingfor", waiting_for )
     @
+
+  is_waiting: ->
+    @data.waitingfor != ""
 
   task_order: ( order ) ->
     return @data.seq if order == undefined
@@ -87,13 +92,16 @@ class AbstractTask
 
   tags: ( tags ) ->
     return @data.tags if tags == undefined
-    if typeof tags == 'string'
+    if tags.constructor && tags.constructor.name == "Array"
+      for k, v of tags
+        tags[k] = v.key() if typeof v.key == "function"
+    else if typeof tags == 'string'
       tags = tags.split(',').filter (t) -> t != ""
     @_set( 'tags', tags )
     @
 
   due_date: ( due ) ->
-    return @data.due if due == undefined
+    return @data.duedate if due == undefined
     due = Math.floor( due.getDate() * 1000 ) if typeof due.getDate == "function"
     @_set( "duedate", if due then due else "" )
     @
@@ -158,11 +166,6 @@ class AbstractTask
   remove_tag: ( tag ) ->
     index = @data.tags.indexof( tag )
     @data.tags.splice( index, 1 ) if index > -1
-    @
-
-  waiting_for_contact: ( contact ) ->
-    contact = contact.key if typeof contact == "object" && contact.key
-    @_set( "waitingfor", contact )
     @
 
 module.exports = AbstractTask

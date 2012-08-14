@@ -24,13 +24,13 @@ class AbstractTag
     return jq.extend( tpl, data )
 
   key: ( key ) ->
-    return @data.key if key == "undefined"
+    return @data.key if key == undefined
     @data.key = key
     @dirty.push "key"
     @
 
   color: ( color ) ->
-    return @data.color if color == "undefined"
+    return @data.color if color == undefined
     @data.color = color
     @dirty.push color
     @

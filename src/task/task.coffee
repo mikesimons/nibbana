@@ -38,7 +38,10 @@ class Task extends AbstractTask
     @
 
   scheduled_for: () ->
-    return @data.start
+    return @data.startdate
+
+  is_recurring: ->
+    @data.recurring != null
 
   estimated_time: ( time ) ->
     return @data.etime if time == undefined
