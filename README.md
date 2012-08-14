@@ -31,43 +31,7 @@ It currently supports (arbitrary percentage above 60)% of the known features of 
         console.log( "  #{task.name()}" ) for task in task_list
 
 # Known issues
-Nibbana has the following known issues:
-
- * Offline mode is untested
- * Specs aren't finished
- * Recurring tasks are not yet supported
- * Adding non-existant tags to a task / project is untested
- * Tag management on tasks is unfinished
- * Views presently dip in to data backing model
- * No way to get list of tags given list of tasks
- * No counts for tasks / tags / projects
- * No indexing so multiple executions of views have to scan storage again even if not changed
-  * Need to add a hashing method for filter methods and index by task + hash: result
- * No views for tags
- * No waiting or scheduled views
- * Potential race conditions between update and sync that could result in data loss
- * Weak / no docs
- * No constant -> string conversions
- * API representations of data is unnecessarily exposed in a couple of places
- * Untested with max_project restricted account
- * No persistent storage for server side
- * Models return defaults for some things when false / null would be more appropriate
- * browserify build is totally broken due to internal requires
-
-# TODO
- * Implement recurring tasks
- * Complete missing specs
- * Implement API compat test suite with break notification
- * Configure project for travis ci
- * Implement offline mode
- * Finish tag implementation
- * Tidy up and fill out view implementation
- * Add views for tags
- * Add counts for views
- * Implement indexing for storage map
- * Implement locks to prevent sync / update race
- * Document API, usage of library in multiple scenarios
- * Fix browserify build
+See the github issue tracker
 
 # Why?
 Although the NirvanaHQ team has a project in the works, it has taken a while just to get the iphone version of NirvanaHQ out.
