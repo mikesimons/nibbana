@@ -5,7 +5,7 @@ rimraf = require 'rimraf'
 browserify = require 'browserify'
 mocha = require 'mocha'
 
-{exec} = require "child_process"
+spawn = require( "child_process" ).spawn
 
 files = [ \
 'storage/local.coffee',
@@ -52,10 +52,6 @@ task 'browserify', 'Build nibbana for the browser', ( options ) ->
   b.require( 'nibbana' )
 
 task 'test', 'Run tests', ( options ) ->
-  exec "node node_modules\\mocha\\bin\\mocha
-    --compilers coffee:coffee-script
-    --reporter spec
-    --require coffee-script
-  ", (err, output) ->
-    throw err if err
-    console.log output
+  cmd = "node"
+  options = [ "node_modules\\mocha\\bin\\mocha", "--compilers", "coffee:coffee-script", "--reporter", "spec", "--require", "coffee-script" ]
+  spawn cmd, options, { customFds: [0,1,2] }
