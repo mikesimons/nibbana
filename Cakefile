@@ -31,10 +31,14 @@ files = [ \
 'util.coffee'
 ]
 
+task 'clean', 'Clean up build artifacts', ( options ) ->
+  rimraf.sync( 'lib' ) if fs.existsSync( 'lib/' )
+  rimraf.sync( 'dist' ) if fs.existsSync( 'dist/' )
+
 task 'build', 'Build nibbana for NPM', ( options ) ->
-  if fs.existsSync( 'lib/' )
-    rimraf.sync( 'lib' )
-    fs.mkdirSync( 'lib' )
+  invoke 'clean'
+  fs.mkdirSync( 'lib' ) if !fs.existsSync( 'lib/' )
+
   for f in files
     in_file = "src/#{f}"
     out_file = "lib/#{f.replace( /coffee$/, 'js' )}"
@@ -47,9 +51,19 @@ task 'build', 'Build nibbana for NPM', ( options ) ->
     fs.writeFileSync( out_file, cs.compile( fs.readFileSync( in_file ).toString(), opts ) )
 
 task 'browserify', 'Build nibbana for the browser', ( options ) ->
-  b = browserify()
-  b.require( 'jquery-browserify', target: 'jquery' )
-  b.require( 'nibbana' )
+  invoke 'build'
+  fs.mkdirSync( 'dist' ) if !fs.existsSync( 'dist/' )
+  b = browserify( )
+  b.register('post', (src) ->
+    r1 = /require\('([^']+\/node_modules)([^']+)'\)/g
+    r2 = /require\.define\("([^"]+\/node_modules)([^"]+)"/g
+    src.replace(r1, 'require(\'$2\')').replace(r2, 'require.define("$2"');
+  )
+  b.ignore( 'jquery' )
+  b.require( 'nibbana', target: 'nibbana' )
+  b.require( 'node-uuid' )
+  b.append( 'require.define("jquery", function(require, module) { module.exports = jQuery; } );' )
+  fs.writeFileSync( 'dist/nibbana.js', b.bundle() )
 
 task 'test', 'Run tests', ( options ) ->
   cmd = "node"
