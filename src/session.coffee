@@ -128,8 +128,8 @@ class Session
     .done( => @storage.remove( "authtoken" ) )
     .fail( @_request_error("Could not logout!") )
 
-  store: ( model ) ->
-    @storage.set( model.store_key(), model )
+  store: ( model, dirty = true ) ->
+    @storage.set( model.store_key(), model, dirty )
 
   sync: () ->
     dfd = new jq.Deferred
@@ -178,7 +178,7 @@ class Session
     dfd = new jq.Deferred
 
     success = ( data ) =>
-      @storage.set( "last_update", util.unix_time() )
+      @storage.set( "last_update", util.unix_time(), false )
       @_cache_results( data.results )
       dfd.resolve( data.results )
 
@@ -201,6 +201,6 @@ class Session
       else
         continue
 
-      @store( m )
+      @store( m, false )
 
 module.exports = Session

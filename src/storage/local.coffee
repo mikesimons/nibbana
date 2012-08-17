@@ -32,6 +32,7 @@ class LocalStorage
   clear: ( key ) ->
     @objectStorage.clear()
     @localStorage.clear()
+    @dirty = []
 
   map: ( func ) ->
     mapped = []
