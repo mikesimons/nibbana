@@ -155,10 +155,14 @@ describe 'Task', ->
       t = new Task {}
       target = moment([2012, 8, 10])
       t.schedule_for( target )
-      set = t.scheduled_for()
-      moment( set ).format( 'YYYYMMDD' ).should.equal target.format( 'YYYYMMDD' )
+      t.scheduled_for().format( 'YYYYMMDD' ).should.equal target.format( 'YYYYMMDD' )
 
-    it 'should set due date'
+    it 'should set due date', ->
+      t = new Task {}
+      target = moment([2012, 8, 10])
+      t.due_date( target )
+      t.due_date().format( 'YYYYMMDD' ).should.equal target.format( 'YYYYMMDD' )
+
     it 'should set recurring status'
 
   describe 'set entity accessor', ->
@@ -180,15 +184,22 @@ describe 'Task', ->
       t.tags( tags )
       t.tags().join( ',' ).should.equal '1,2'
 
-    it 'should set start date from Date object'
-    it 'should set due date from Date object'
+    it 'should set start date from Date object', ->
+      t = new Task {}
+      target = moment([2012, 8, 10])
+      t.schedule_for( target.toDate() )
+      t.scheduled_for().format( 'YYYYMMDD' ).should.equal target.format( 'YYYYMMDD' )
+
+    it 'should set due date from Date object', ->
+      t = new Task {}
+      target = moment([2012, 8, 10])
+      t.due_date( target.toDate() )
+      t.due_date().format( 'YYYYMMDD' ).should.equal target.format( 'YYYYMMDD' )
 
   describe 'special accessors', ->
     it 'should return expected store key', ->
       t = new Task id: 'ABC'
       t.store_key().should.equal 'task-ABC'
-
-    it 'should return all data as object'
 
     it 'should set __internal_type on exported data', ->
       t = new Task {}
