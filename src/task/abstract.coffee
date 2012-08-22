@@ -2,6 +2,7 @@ constants = require( '../constants' )
 util = require( '../util' )
 jq = require( 'jquery' )
 uuid = require( 'node-uuid' )
+moment = require( 'moment' )
 
 class AbstractTask
   constructor: ( data, storage ) ->
@@ -12,7 +13,8 @@ class AbstractTask
   get_data: ->
     data = jq.extend( "__internal_type": @constructor.name, @data )
     data.tags = data.tags.join( "," )
-    data.startdate = data.startdate.toISOString().slice(0, 10).replace(/-/g, '') if typeof data.startdate.toISOString == "function"
+    data.startdate = data.startdate.format( 'YYYYMMDD' ) if data.startdate != ""
+    data.duedate = data.duedate.format( 'YYYYMMDD' ) if data.duedate != ""
     return data
 
   store_key: ->
@@ -44,6 +46,9 @@ class AbstractTask
       data.tags = data.tags.split( "," ).filter ( t ) -> t != ""
 
     tpl = jq.extend( tpl, data )
+
+    tpl.duedate = moment( tpl.duedate, 'YYYYMMDD' ) if tpl.duedate != ''
+    tpl.startdate = moment( tpl.startdate, 'YYYYMMDD' ) if tpl.startdate != ''
 
     for k, v of tpl
       if k[0] != '_' && !tpl[ "_#{k}" ]
@@ -102,7 +107,7 @@ class AbstractTask
 
   due_date: ( due ) ->
     return @data.duedate if due == undefined
-    due = Math.floor( due.getDate() * 1000 ) if typeof due.getDate == "function"
+    due = moment( due )
     @_set( "duedate", if due then due else "" )
     @
 
@@ -115,11 +120,11 @@ class AbstractTask
     @data.seqt > 0
 
   complete: ( toggle = true ) ->
-    @_set( "complete", if toggle then util.unix_time() else 0 )
+    @_set( "completed", if toggle then util.unix_time() else 0 )
     @
 
   is_completed: ->
-    @data.complete > 0
+    @data.completed > 0
 
   cancel: ( toggle = true ) ->
     @_set( "cancelled", toggle )

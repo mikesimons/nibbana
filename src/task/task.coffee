@@ -1,6 +1,7 @@
 AbstractTask = require( './abstract' )
 Project = require( './project' )
 constants = require( '../constants' )
+moment = require( 'moment' )
 
 class Task extends AbstractTask
   constructor: ( data, storage ) ->
@@ -33,12 +34,13 @@ class Task extends AbstractTask
 
   # Basic ops
   schedule_for: ( start ) ->
+    start = moment( start )
     @_set( "startdate", if start then start else "" )
     @state( constants.task.state.SCHEDULED )
     @
 
   scheduled_for: () ->
-    return @data.startdate
+    return moment( @data.startdate )
 
   is_recurring: ->
     @data.recurring != null

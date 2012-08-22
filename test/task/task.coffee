@@ -1,7 +1,7 @@
 chai = require 'chai'
-Task = require '../src/task/task'
-Project = require '../src/task/project'
-Tag = require '../src/tag/tag'
+Task = require '../../src/task/task'
+Project = require '../../src/task/project'
+Tag = require '../../src/tag/tag'
 moment = require 'moment'
 
 chai.should()
@@ -51,11 +51,11 @@ describe 'Task', ->
 
     it 'should return scheduled for date', ->
       t = new Task startdate: '20120814'
-      t.scheduled_for().should.equal '20120814'
+      t.scheduled_for().format( 'YYYYMMDD' ).should.equal '20120814'
 
     it 'should return due date', ->
       t = new Task duedate: '20120814'
-      t.due_date().should.equal '20120814'
+      t.due_date().format( 'YYYYMMDD' ).should.equal '20120814'
 
   describe 'get entity accessor', ->
     it 'should return parent', ->
@@ -194,7 +194,7 @@ describe 'Task', ->
       t = new Task {}
       t.get_data().__internal_type.should.equal 'Task'
 
-  describe 'api compaitbility', ->
+  describe 'api compatibility', ->
     it 'should set modified time for property', ->
       start = Math.floor( new Date().getTime() / 1000 )
       t = new Task {}
@@ -205,14 +205,46 @@ describe 'Task', ->
       ( data._name >= start ).should.be.true
 
     it 'should export all fields required'
-    it 'should export due date as YYYYMMDD'
-    it 'should export start date as YYYYMMDD'
+    it 'should export due date as YYYYMMDD', ->
+      t = new Task {}
+      d = moment( [ 2012, 8, 23 ] )
+      t.due_date( d )
+      data = t.get_data()
+      data.duedate.should.equal d.format( 'YYYYMMDD' )
+
+    it 'should export start date as YYYYMMDD', ->
+      t = new Task {}
+      d = moment( [ 2012, 8, 23 ] )
+      t.schedule_for( d )
+      data = t.get_data()
+      data.startdate.should.equal d.format( 'YYYYMMDD' )
+
     it 'should export state as valid integer'
-    it 'should set seqt for focused'
+    it 'should set seqt for focused', ->
+      t = new Task {}
+      t.focus()
+      data = t.get_data()
+      ( data.seqt > 0 ).should.be.true
+
     it 'should set seq for task list order'
-    it 'should set deleted to timestamp for deletion'
-    it 'should set completed to timestamp for completion'
-    it 'should set etime to minutes estimated'
+    it 'should set state to deleted for deletion', ->
+      t = new Task {}
+      t.delete()
+      data = t.get_data()
+      data.state.should.equal "8"
+
+    it 'should set completed to timestamp for completion', ->
+      t = new Task {}
+      t.complete()
+      data = t.get_data()
+      ( data.completed > 0 ).should.be.true
+
+    it 'should set etime to minutes estimated', ->
+      t = new Task {}
+      t.estimated_time( 200 )
+      data = t.get_data()
+      data.etime.should.equal 200
+
     it 'should export tags as comma delimited string'
     it 'should prefix and suffix comma to tag list'
     it 'should set parentid to parent uuid'
