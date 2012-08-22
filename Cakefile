@@ -67,5 +67,5 @@ task 'browserify', 'Build nibbana for the browser', ( options ) ->
 
 task 'test', 'Run tests', ( options ) ->
   cmd = "node"
-  options = [ "node_modules\\mocha\\bin\\mocha", "--compilers", "coffee:coffee-script", "--reporter", "spec", "--require", "coffee-script" ]
+  options = [ "node_modules\\mocha\\bin\\mocha", "--recursive", "--compilers", "coffee:coffee-script", "--reporter", "spec", "--require", "coffee-script" ]
   spawn cmd, options, { customFds: [0,1,2] }
