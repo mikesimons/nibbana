@@ -7,7 +7,7 @@ class Contact extends AbstractTag
     super( data )
 
   email: ( email ) ->
-    return @data.email if email == "undefined"
+    return @data.email if email == undefined
     @data.email = email
     @dirty.push "email"
     @
