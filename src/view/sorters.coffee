@@ -7,3 +7,4 @@ _num_field_sorter = ( field ) ->
 module.exports =
   task_list: _num_field_sorter( "seqp" )
   project_list: _num_field_sorter( "seq" )
+  focus_list: _num_field_sorter( "seqt" )

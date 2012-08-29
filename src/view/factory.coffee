@@ -14,3 +14,9 @@ module.exports =
     new View storage,
       sort: Sorters.project_list
       filter: Filters.dsl( -> @and( @projects, @incomplete ) )
+
+  focus_list: ( storage ) ->
+    new View storage,
+      sort: Sorters.focus_list
+      filter: @focused
+      group: Groupers.state
