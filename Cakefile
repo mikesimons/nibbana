@@ -4,6 +4,8 @@ cs = require 'coffee-script'
 rimraf = require 'rimraf'
 browserify = require 'browserify'
 mocha = require 'mocha'
+ncp = require( 'ncp' ).ncp
+which = require 'which'
 
 spawn = require( "child_process" ).spawn
 
@@ -34,10 +36,11 @@ files = [ \
 task 'clean', 'Clean up build artifacts', ( options ) ->
   rimraf.sync( 'lib' ) if fs.existsSync( 'lib/' )
   rimraf.sync( 'dist' ) if fs.existsSync( 'dist/' )
+  rimraf.sync( 'npm_build' ) if fs.existsSync( 'npm_build/' )
 
-task 'build', 'Build nibbana for NPM', ( options ) ->
+task 'compile', 'Compile coffeescript to JS', ( options ) ->
   invoke 'clean'
-  fs.mkdirSync( 'lib' ) if !fs.existsSync( 'lib/' )
+  fs.mkdirSync( 'lib' )
 
   for f in files
     in_file = "src/#{f}"
@@ -50,9 +53,34 @@ task 'build', 'Build nibbana for NPM', ( options ) ->
     fs.mkdirSync( dir ) if ! fs.existsSync( dir )
     fs.writeFileSync( out_file, cs.compile( fs.readFileSync( in_file ).toString(), opts ) )
 
+task 'publish_npm', 'Build & publish npm', ( options ) ->
+  invoke 'compile'
+  fs.mkdirSync( 'npm_build' )
+
+  # ncp is a bit messy since we can't do deferred / event stuff with it (AFAIK)
+  # We'll do some higher order function magic instead
+  publish = ->
+    cmd = which.sync( "npm" )
+    spawn cmd, [ "publish", "npm_build" ], { customFds: [0,1,2] }
+
+  after_count = ( n, cb ) ->
+    cb_ok = 0
+    internal_cb = ( err ) ->
+      throw err if err
+      cb_ok += 1
+      cb() if cb_ok == n
+
+  publish_after_done = after_count( 4, publish )
+
+  # Copy files
+  ncp( 'lib/', 'npm_build/lib/', publish_after_done )
+  ncp( 'README.md', 'npm_build/README.md', publish_after_done )
+  ncp( 'LICENSE', 'npm_build/LICENSE', publish_after_done )
+  ncp( 'package.json', 'npm_build/package.json', publish_after_done )
+
 task 'browserify', 'Build nibbana for the browser', ( options ) ->
-  invoke 'build'
-  fs.mkdirSync( 'dist' ) if !fs.existsSync( 'dist/' )
+  invoke 'compile'
+  fs.mkdirSync( 'dist' )
   b = browserify( )
   b.register('post', (src) ->
     r1 = /require\('([^']+\/node_modules)([^']+)'\)/g
@@ -66,6 +94,6 @@ task 'browserify', 'Build nibbana for the browser', ( options ) ->
   fs.writeFileSync( 'dist/nibbana.js', b.bundle() )
 
 task 'test', 'Run tests', ( options ) ->
-  cmd = "node"
-  options = [ "node_modules\\mocha\\bin\\mocha", "--recursive", "--compilers", "coffee:coffee-script", "--reporter", "spec", "--require", "coffee-script" ]
+  cmd = which.sync( "mocha" )
+  options = [ "--recursive", "--compilers", "coffee:coffee-script", "--reporter", "spec", "--require", "coffee-script" ]
   spawn cmd, options, { customFds: [0,1,2] }
