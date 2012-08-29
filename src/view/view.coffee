@@ -18,4 +18,13 @@ class View
 
     return view
 
+  tags: ->
+    tasks = @get()
+    tags = []
+    for t in tasks
+      tags.concat(t.tags())
+
+    # TODO uniq tags
+    return tags
+
 module.exports = View
