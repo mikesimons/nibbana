@@ -18,5 +18,8 @@
     "moment": "~1.6.2",
     "ncp": "~0.2.6",
     "which": "~1.0.5"
+  },
+  "scripts": {
+    "test": "cake test"
   }
 }
