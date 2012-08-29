@@ -7,31 +7,25 @@ class Project extends AbstractTask
     @type = constants.task.type.PROJECT
     super( data )
 
-  to_task: ->
-    new_state = if @data.parentid && @data.state == constants.task.state.ACTIVE_PROJECT
-      constants.task.state.NEXT
-    else if @data.state == constants.task.state.ACTIVE_PROJECT
-      constants.task.state.INBOX
-
-    @_set( "state", new_state ) if new_state
-    @_set( "type", constants.task.state.TASK )
-
-    t = new Task( @data )
-    t.dirty = @dirty
-    return t
-
   sequential: ( toggle = true ) ->
-    @_set( "ps", Constants.Project.SEQUENTIAL )
+    ps = if toggle then constants.project.SEQUENTIAL else constants.project.PARALLEL
+    @_set( "ps", ps )
     @
 
   parallel: ( toggle = true ) ->
-    @_set( "ps", Constants.Project.PARALLEL )
+    ps = if toggle then constants.project.PARALLEL else constants.project.SEQUENTIAL
+    @_set( "ps",  ps )
     @
 
   is_sequential: ->
-    @data.ps == Constants.Project.SEQUENTIAL
+    @data.ps == constants.project.SEQUENTIAL
 
   is_parallel: ->
-    @data.ps == Constants.Project.PARALLEL
+    @data.ps == constants.project.PARALLEL
+
+  project_order: ( order ) ->
+    return @data.seq if order == undefined
+    @_set( "seq", order )
+    @
 
 module.exports = Project
