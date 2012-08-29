@@ -1,3 +1,3 @@
 module.exports =
-  state: ( e ) -> e.data && e.data.state
-  project: ( e ) -> e.data && e.data.parentid
+  state: ( e ) -> e.state && e.state()
+  project: ( e ) -> e.parent_id && e.parent_id()
