@@ -16,7 +16,6 @@ class Task extends AbstractTask
     p.dirty = @dirty
     return p
 
-  # Parent ops
   set_parent: ( parent ) ->
     parent = parent.id if typeof parent == "object" && parent.id
     @_set( "parentid", parent )
@@ -32,7 +31,6 @@ class Task extends AbstractTask
     @_set( "parentid", parent.id )
     @
 
-  # Basic ops
   schedule_for: ( start ) ->
     start = moment( start )
     @_set( "startdate", if start then start else "" )
@@ -53,6 +51,11 @@ class Task extends AbstractTask
   energy: ( energy ) ->
     return @data.energy if energy == undefined
     @_set( "energy", energy )
+    @
+
+  task_order: ( order ) ->
+    return @data.seqp if order == undefined
+    @_set( "seqp", order )
     @
 
 module.exports = Task

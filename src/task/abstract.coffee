@@ -12,7 +12,7 @@ class AbstractTask
 
   get_data: ->
     data = jq.extend( "__internal_type": @constructor.name, @data )
-    data.tags = data.tags.join( "," )
+    data.tags = ',' + data.tags.join( "," ) + ','
     data.startdate = data.startdate.format( 'YYYYMMDD' ) if data.startdate != ""
     data.duedate = data.duedate.format( 'YYYYMMDD' ) if data.duedate != ""
     return data
@@ -90,11 +90,6 @@ class AbstractTask
   is_waiting: ->
     @data.waitingfor != ""
 
-  task_order: ( order ) ->
-    return @data.seq if order == undefined
-    @_set( "seq", order )
-    @
-
   tags: ( tags ) ->
     return @data.tags if tags == undefined
     if tags.constructor && tags.constructor.name == "Array"
@@ -153,7 +148,7 @@ class AbstractTask
     @
 
   is_logged: ->
-  	@data.state == constants.task.state.LOGGED
+    @data.state == constants.task.state.LOGGED
 
   # Tag ops
   add_tag: ( tag ) ->

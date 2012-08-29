@@ -2,6 +2,7 @@ chai = require 'chai'
 Task = require '../../src/task/task'
 Project = require '../../src/task/project'
 Tag = require '../../src/tag/tag'
+constants = require '../../src/constants'
 moment = require 'moment'
 
 chai.should()
@@ -30,7 +31,7 @@ describe 'Task', ->
       t.waiting_for().should.equal 'Someone'
 
     it 'should return task list order', ->
-      t = new Task seq: 1
+      t = new Task seqp: 1
       t.task_order().should.equal 1
 
     it 'should return tags as array', ->
@@ -215,7 +216,6 @@ describe 'Task', ->
       data._name.should.be.a 'number'
       ( data._name >= start ).should.be.true
 
-    it 'should export all fields required'
     it 'should export due date as YYYYMMDD', ->
       t = new Task {}
       d = moment( [ 2012, 8, 23 ] )
@@ -230,14 +230,12 @@ describe 'Task', ->
       data = t.get_data()
       data.startdate.should.equal d.format( 'YYYYMMDD' )
 
-    it 'should export state as valid integer'
     it 'should set seqt for focused', ->
       t = new Task {}
       t.focus()
       data = t.get_data()
       ( data.seqt > 0 ).should.be.true
 
-    it 'should set seq for task list order'
     it 'should set state to deleted for deletion', ->
       t = new Task {}
       t.delete()
@@ -256,7 +254,68 @@ describe 'Task', ->
       data = t.get_data()
       data.etime.should.equal 200
 
-    it 'should export tags as comma delimited string'
-    it 'should prefix and suffix comma to tag list'
-    it 'should set parentid to parent uuid'
-    it 'should provide defaults for all fields'
+    it 'should export tags as comma delimited string', ->
+      t = new Task {}
+      t.tags( [ 1, 2, 3 ] )
+      data = t.get_data()
+      data.tags.should.equal ',1,2,3,'
+
+    it 'should provide defaults for all fields', ->
+      t = new Task {}
+      data = t.get_data()
+      data.should.have.property( 'id' )
+      data.id.should.not.be.empty
+
+      data.should.have.property( 'name' )
+      data.name.should.equal 'Unnamed'
+
+      data.should.have.property( 'type' )
+      data.type.should.equal constants.task.type.TASK
+
+      data.should.have.property( 'state' )
+      data.state.should.equal constants.task.state.INBOX
+
+      data.should.have.property( 'parentid' )
+      data.parentid.should.equal ''
+
+      data.should.have.property( 'waitingfor' )
+      data.waitingfor.should.equal ''
+
+      data.should.have.property( 'completed' )
+      data.completed.should.equal 0
+
+      data.should.have.property( 'cancelled' )
+      data.cancelled.should.equal 0
+
+      data.should.have.property( 'seq' )
+      data.seq.should.equal 0
+
+      data.should.have.property( 'seqp' )
+      data.seqp.should.equal 0
+
+      data.should.have.property( 'seqt' )
+      data.seqt.should.equal 0
+
+      data.should.have.property( 'tags' )
+      data.tags.should.equal ',,'
+
+      data.should.have.property( 'note' )
+      data.note.should.equal ''
+
+      data.should.have.property( 'ps' )
+      data.ps.should.equal 0
+
+      data.should.have.property( 'etime' )
+      data.etime.should.equal 0
+
+      data.should.have.property( 'energy' )
+      data.energy.should.equal 0
+
+      data.should.have.property( 'startdate' )
+      data.startdate.should.equal ''
+
+      data.should.have.property( 'duedate' )
+      data.duedate.should.equal ''
+
+      data.should.have.property( 'recurring' )
+      ( data.recurring == null ).should.be.true
